@@ -1,4 +1,4 @@
-package com.example.skillboost;
+    package com.example.skillboost;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
