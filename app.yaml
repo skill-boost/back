@@ -19,22 +19,42 @@ spec:
     spec:
       containers:
         - name: springboot-app
-          image: my-spring-app:latest
+          image: springboot-app:latest
           ports:
             - containerPort: 8080
           envFrom:
             - secretRef:
                 name: db-secret
-
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: springboot-app
+  labels:
+    app: springboot-app
 spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 8080
   selector:
     app: springboot-app
-  ports:
-    - port: 8080
-      targetPort: 8080
+  sessionAffinity: None
   type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: springboot-ingress
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: springboot-app
+                port:
+                  number: 80
