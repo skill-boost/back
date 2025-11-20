@@ -121,6 +121,9 @@ jobs:
             # -- 배포 결과 확인 --
             kubectl get pods -l app=skill-boost-app
             echo "✅ Deployment successful!"
+            
+            # -- 사용하지 않는 이미지 삭제 --
+            sudo k3s ctr images prune -f
 
       # AWS 보안 그룹에서 IP 제거
 #      - name: Remove Github Actions IP from security group
