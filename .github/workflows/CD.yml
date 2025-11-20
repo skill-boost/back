@@ -78,6 +78,7 @@ jobs:
             EOF
 
             # -- Deployment 이미지 업데이트 (자동으로 롤링 업데이트 시작) --
+            kubectl apply -f app.yaml
             kubectl set image deployment/skill-boost-app \
             skill-boost-app=${{ secrets.DOCKER_USERNAME }}/skill-boost:${{ github.sha }} \
             --record
