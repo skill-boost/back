@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: skill-boost-app
-          image: skill-boost:latest
+          image: USERNAME/skill-boost:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

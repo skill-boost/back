@@ -38,6 +38,22 @@ jobs:
           source: "k8s/*.yaml"
           target: "/home/${{ secrets.EC2_USER }}/k8s-manifests"
 
+      # SSH 접속 후 app.yaml의 username 치환
+      - name: Replace <username> in app.yaml on EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # k8s 매니페스트 디렉토리
+            MANIFEST_DIR="/home/${{ secrets.EC2_USER }}/k8s-manifests/k8s"
+
+            # USERNAME을 GitHub Secret 값으로 치환
+            sed -i "s|USERNAME|${{ secrets.DOCKER_USERNAME }}|g" "$MANIFEST_DIR/app.yaml"
+
+            echo "✅ app.yaml의 USERNAME 치환 완료"
+
 #      # Github Actions IP 가져오기
 #      - name: Get Github Actions IP
 #        id: ip
