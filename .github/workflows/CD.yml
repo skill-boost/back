@@ -28,6 +28,16 @@ jobs:
           docker build -t ${{ secrets.DOCKER_USERNAME }}/skill-boost:${{ github.sha }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/skill-boost:${{ github.sha }}
 
+      # EC2로 yaml 파일 복사
+      - name: Copy k8s manifests to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "k8s/*.yaml"
+          target: "/home/${{ secrets.EC2_USER }}/k8s-manifests"
+
 #      # Github Actions IP 가져오기
 #      - name: Get Github Actions IP
 #        id: ip
@@ -77,11 +87,9 @@ jobs:
               GITHUB_CLIENT_SECRET: "${{ secrets.GITHUB_CLIENT_SECRET }}"
             EOF
 
-            # -- Deployment 이미지 업데이트 (자동으로 롤링 업데이트 시작) --
-            kubectl apply -f app.yaml
-            kubectl set image deployment/skill-boost-app \
-            skill-boost-app=${{ secrets.DOCKER_USERNAME }}/skill-boost:${{ github.sha }} \
-            --record
+            # -- 매니페스트 파일 적용 --
+            cd /home/${{ secrets.EC2_USER }}/k8s-manifests/k8s
+            kubectl apply -f .
       
             # -- 롤링 업데이트 완료 대기 --
             kubectl rollout status deployment/skill-boost-app --timeout=5m
