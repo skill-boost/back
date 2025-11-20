@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: skill-boost-app
+  namespace: default
 spec:
   replicas: 2
   selector:
@@ -35,6 +36,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: skill-boost-service
+  namespace: default
   labels:
     app: skill-boost-app
 spec:
@@ -51,9 +54,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: skill-boost-app-ingress
-  annotations:
-    kubernetes.io/ingress.class: traefik
+  namespace: default
 spec:
+  ingressClassName: traefik
   rules:
     - http:
         paths:
@@ -61,6 +64,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: skill-boost-app
+                name: skill-boost-service
                 port:
                   number: 80
