@@ -85,9 +85,10 @@ jobs:
               namespace: default
             type: Opaque
             stringData:
-              DB_URL: "${{ secrets.DB_URL }}"
-              DB_USERNAME: "${{ secrets.DB_USERNAME }}"
-              DB_PASSWORD: "${{ secrets.DB_PASSWORD }}"
+                MYSQL_ROOT_PASSWORD: "${{ secrets.DB_PASSWORD }}"
+                MYSQL_DATABASE: "${{ secrets.DB }}"
+                MYSQL_USER: "${{ secrets.DB_USERNAME }}"         
+                MYSQL_PASSWORD: "${{ secrets.DB_PASSWORD }}"
             EOF
 
             # -- app-secret 생성 --
@@ -99,6 +100,7 @@ jobs:
               namespace: default
             type: Opaque
             stringData:
+              MYSQL_URL: "${{ secrets.MYSQL_URL }}"
               JWT_SECRET_KEY: "${{ secrets.JWT_SECRET_KEY }}"
               GITHUB_CLIENT_SECRET: "${{ secrets.GITHUB_CLIENT_SECRET }}"
             EOF

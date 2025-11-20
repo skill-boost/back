@@ -1,6 +1,12 @@
 application:
   name: skill-boost
 
+spring:
+  datasource:
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+
 jpa:
   hibernate:
     ddl-auto: none
@@ -10,7 +16,7 @@ security:
     client:
       registration:
         github:
-          client-id: Ov23liXAPa0etQe0EisI
+          client-id: ${GITHUB_CLIENT_ID}
           client-secret: ${GITHUB_CLIENT_SECRET}
           scope:
             - read:user
