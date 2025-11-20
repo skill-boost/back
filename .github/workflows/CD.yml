@@ -76,6 +76,9 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            # 기존 db-secret 삭제
+            kubectl delete secret db-secret
+            
             # -- db-secret 생성 --
             cat <<EOF | kubectl apply -f -
             apiVersion: v1
@@ -91,6 +94,9 @@ jobs:
                 MYSQL_PASSWORD: "${{ secrets.DB_PASSWORD }}"
             EOF
 
+            # 기존 app-secret 삭제
+            kubectl delete secret app-secret
+            
             # -- app-secret 생성 --
             cat <<EOF | kubectl apply -f -
             apiVersion: v1
