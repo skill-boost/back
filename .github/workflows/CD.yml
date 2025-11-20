@@ -27,19 +27,19 @@ jobs:
           docker build -t ${{ secrets.DOCKER_USERNAME }}/skill-boost:${{ github.sha }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/skill-boost:${{ github.sha }}
 
-      # Github Actions IP 가져오기
-      - name: Get Github Actions IP
-        id: ip
-        uses: haythem/public-ip@v1.2
-
-      # AWS 보안 그룹에 동적으로 IP 추가
-      - name: Add Github Actions IP to Security group
-        run: |
-          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SECRET_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ap-northeast-2
+#      # Github Actions IP 가져오기
+#      - name: Get Github Actions IP
+#        id: ip
+#        uses: haythem/public-ip@v1.2
+#
+#      # AWS 보안 그룹에 동적으로 IP 추가
+#      - name: Add Github Actions IP to Security group
+#        run: |
+#          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SECRET_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+#        env:
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          AWS_DEFAULT_REGION: ap-northeast-2
 
       # EC2 SSH → k3s에 Secret 생성 & Deployment 업데이트
       - name: Deploy to K3s via SSH
@@ -89,11 +89,11 @@ jobs:
             echo "✅ Deployment successful!"
 
       # AWS 보안 그룹에서 IP 제거
-      - name: Remove Github Actions IP from security group
-        if: always()
-        run: |
-          aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_SECRET_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ap-northeast-2
+#      - name: Remove Github Actions IP from security group
+#        if: always()
+#        run: |
+#          aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_SECRET_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+#        env:
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          AWS_DEFAULT_REGION: ap-northeast-2
