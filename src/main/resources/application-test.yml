@@ -1,27 +1,25 @@
 spring:
-  application:
-    name: skill-boost
-
   datasource:
-    url: ${MYSQL_URL}
-    username: ${MYSQL_USER}
-    password: ${MYSQL_PASSWORD}
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MYSQL
+    driver-class-name:
+    username: sa
+    password: org.h2.Driver
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
 
   security:
     oauth2:
       client:
         registration:
           github:
-            client-id: ${GITHUB_CLIENT_ID}
-            client-secret: ${GITHUB_CLIENT_SECRET}
+            client-id: test
+            client-secret: test
             scope:
               - read:user
               - user:email
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
         provider:
           github:
             authorization-uri: https://github.com/login/oauth/authorize
@@ -30,5 +28,5 @@ spring:
             user-name-attribute: id
 
 jwt:
-  secret-key: ${JWT_SECRET_KEY}
-  expiration-ms: 86400000
+  secret-key: test-secret
+  expiration-ms: 100000
