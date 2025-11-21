@@ -12,7 +12,7 @@ jobs:
     steps:
       # 코드 체크아웃
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # DockerHub 로그인
       - name: Login to DockerHub
