@@ -23,7 +23,7 @@ public class SecurityConfig {
     private final JwtProvider jwtProvider;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {  // ✅ 파라미터 제거!
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 // 요청 권한 설정
                 .authorizeHttpRequests(auth -> auth

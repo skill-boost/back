@@ -28,7 +28,7 @@ public class JwtProvider {
     @Value("${jwt.expiration-ms}")
     private long expirationMs;
 
-    @PostConstruct  // ✅ 이거 꼭 있어야 합니다!
+    @PostConstruct
     protected void init() {
         // Base64로 인코딩된 secret key를 디코딩하여 Key 객체 생성
         byte[] keyBytes = Base64.getDecoder().decode(this.secretKeyBase64);
