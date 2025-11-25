@@ -1,3 +1,5 @@
 spring:
   application:
     name: skill-boost
+  profiles:
+    active: local
