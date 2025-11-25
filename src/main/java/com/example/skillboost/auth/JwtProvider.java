@@ -30,10 +30,22 @@ public class JwtProvider {
 
     @PostConstruct
     protected void init() {
-        // Base64로 인코딩된 secret key를 디코딩하여 Key 객체 생성
-        byte[] keyBytes = Base64.getDecoder().decode(this.secretKeyBase64);
-        this.key = Keys.hmacShaKeyFor(keyBytes);
-        log.info("JWT Provider 초기화 완료");
+        log.info("========== JWT 설정 값 확인 ==========");
+        log.info("입력된 Secret Key: [{}]", this.secretKeyBase64);
+
+        if (this.secretKeyBase64 == null || this.secretKeyBase64.startsWith("${")) {
+            throw new RuntimeException("환경변수 [JWT_SECRET_KEY]가 설정되지 않았습니다! IntelliJ 설정을 확인해주세요.");
+        }
+        String safeKey = this.secretKeyBase64.replaceAll("\\s+", "");
+
+        try {
+            byte[] keyBytes = Base64.getDecoder().decode(safeKey);
+            this.key = Keys.hmacShaKeyFor(keyBytes);
+            log.info("JWT Provider 정상 초기화 완료");
+        } catch (IllegalArgumentException e) {
+            log.error("Base64 디코딩 실패! 키 값을 확인해주세요. (현재 값: {})", safeKey);
+            throw e;
+        }
     }
 
     /**
