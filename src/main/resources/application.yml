@@ -1,3 +1,27 @@
 spring:
+  config:
+    import: optional:classpath:application-secret.yml
   application:
     name: skill-boost
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/mydatabase?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: myuser
+    password: secret
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+server:
+  port: 8080
+
+gemini:
+  api:
+    key: AIzaSyCQNb1WilrVsCKdZUhfIjk0VdFvHklJyeQ
+  model: gemini-2.5-flash

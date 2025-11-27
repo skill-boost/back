@@ -38,3 +38,6 @@ out/
 
 .env
 *secret.yaml
+
+### Secret Config ###
+src/main/resources/application-secret.yml
