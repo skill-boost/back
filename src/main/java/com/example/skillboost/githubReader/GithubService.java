@@ -29,7 +29,7 @@ public class GithubService {
         String repo = parts[1];
         String treeUrl = String.format("/repos/%s/%s/git/trees/%s?recursive=1", owner, repo, branch);
 
-        // 🔹 1. 전체 트리 조회
+        // 전체 트리 조회
         Map<String, Object> response = webClient.get()
                 .uri(treeUrl)
                 .headers(h -> {
@@ -43,12 +43,12 @@ public class GithubService {
         List<Map<String, Object>> tree = (List<Map<String, Object>>) response.get("tree");
         List<GithubFile> files = new ArrayList<>();
 
-        // 🔹 2. 텍스트 파일만 필터링
+        // 텍스트 파일만 필터링
         for (Map<String, Object> file : tree) {
             if ("blob".equals(file.get("type"))) {
                 String path = (String) file.get("path");
 
-                if (!isTextFile(path)) continue; // 🧩 이진 파일은 스킵
+                if (!isTextFile(path)) continue;
 
                 String rawUrl = String.format(
                         "https://raw.githubusercontent.com/%s/%s/%s/%s",
@@ -63,7 +63,7 @@ public class GithubService {
         return files;
     }
 
-    // 🔹 개별 파일 내용 불러오기
+    // 개별 파일 내용 불러오기
     private String fetchFileContent(String rawUrl) {
         try {
             return webClient.get()
@@ -81,7 +81,7 @@ public class GithubService {
         }
     }
 
-    // 🔹 텍스트 파일 확장자 필터
+    // 텍스트 파일 확장자 필터
     private static final List<String> TEXT_EXTENSIONS = List.of(
             ".java", ".kt", ".xml", ".json", ".yml", ".yaml",
             ".md", ".gradle", ".gitignore", ".txt", ".properties", ".csv"
