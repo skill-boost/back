@@ -28,5 +28,5 @@ spring:
             user-name-attribute: id
 
 jwt:
-  secret-key: test-secret
+  secret-key: TXlTdXBlclNlY3JldEtleUZvclNraWxsQm9vc3RQcm9qZWN0MjAyNUNoYWxsZW5nZSE=
   expiration-ms: 100000
