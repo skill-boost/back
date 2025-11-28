@@ -1,6 +1,8 @@
-package com.example.skillboost.codereview.client;
+// src/main/java/com/example/skillboost/codereview/llm/GeminiCodeReviewClient.java
+package com.example.skillboost.codereview.llm;
 
 import com.example.skillboost.codereview.dto.CodeReviewResponse;
+import com.example.skillboost.codereview.github.GithubFile;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,12 +30,18 @@ public class GeminiCodeReviewClient {
         this.objectMapper = new ObjectMapper();
     }
 
+    // 🔹 코드만 사용하는 기존 모드 (호환용)
     public CodeReviewResponse requestReview(String code, String comment) {
+        return requestReview(code, comment, null);
+    }
+
+    // 🔹 레포지터리 컨텍스트까지 함께 넘기는 확장 버전
+    public CodeReviewResponse requestReview(String code, String comment, List<GithubFile> repoContext) {
         try {
             String url = "https://generativelanguage.googleapis.com/v1beta/models/"
                     + model + ":generateContent?key=" + apiKey;
 
-            String prompt = buildPrompt(code, comment);
+            String prompt = buildPrompt(code, comment, repoContext);
 
             Map<String, Object> textPart = new HashMap<>();
             textPart.put("text", prompt);
@@ -70,14 +78,66 @@ public class GeminiCodeReviewClient {
     }
 
     /**
-     * 리뷰 + 질문을 "간결하고 핵심적"이고 "□ 포맷", "1. 2. 질문 구조"로 내보내도록 만드는 프롬프트
+     * 코드 + (선택) GitHub 레포지터리 컨텍스트(README, 파일구조, 일부 코드)를 포함한 프롬프트
      */
-    private String buildPrompt(String code, String comment) {
+    private String buildPrompt(String code, String comment, List<GithubFile> repoContext) {
         String userRequirement = (comment != null && !comment.trim().isEmpty())
                 ? comment.trim()
                 : "특별한 추가 요구사항은 없습니다. 핵심만 간결하게 리뷰해줘.";
 
-        return """
+        StringBuilder sb = new StringBuilder();
+
+        // 1) 레포지터리 전체 맥락
+        if (repoContext != null && !repoContext.isEmpty()) {
+            sb.append("이 코드는 GitHub 레포지터리 전체 맥락 안에 있는 일부 코드입니다.\n")
+                    .append("레포지터리의 README와 파일 구조, 주요 코드 파일을 참고해서 '요구사항을 만족하는지'와 '아키텍처 적절성'까지 함께 리뷰해 주세요.\n\n");
+
+            // README 찾기
+            GithubFile readme = repoContext.stream()
+                    .filter(f -> f.getPath().equalsIgnoreCase("README.md")
+                            || f.getPath().toLowerCase().endsWith("/readme.md"))
+                    .findFirst()
+                    .orElse(null);
+
+            if (readme != null && readme.getContent() != null) {
+                String readmeContent = readme.getContent();
+                if (readmeContent.length() > 2000) {
+                    readmeContent = readmeContent.substring(0, 2000) + "\n... (생략)";
+                }
+
+                sb.append("=== README (요구사항 기준) ===\n");
+                sb.append(readmeContent).append("\n\n");
+            }
+
+            // 파일 목록 (최대 40개)
+            sb.append("=== 프로젝트 파일 구조 (일부) ===\n");
+            repoContext.stream()
+                    .limit(40)
+                    .forEach(f -> sb.append("- ").append(f.getPath()).append("\n"));
+            if (repoContext.size() > 40) {
+                sb.append("... 외 ").append(repoContext.size() - 40).append("개 파일 더 있음\n");
+            }
+            sb.append("\n");
+
+            // 주요 코드 샘플 (java 위주 최대 5개)
+            sb.append("=== 주요 코드 샘플 (일부) ===\n");
+            repoContext.stream()
+                    .filter(f -> f.getPath().endsWith(".java"))
+                    .limit(5)
+                    .forEach(f -> {
+                        sb.append("#### ").append(f.getPath()).append("\n");
+                        String c = f.getContent();
+                        if (c != null && c.length() > 1200) {
+                            c = c.substring(0, 1200) + "\n... (생략)";
+                        }
+                        sb.append(c == null ? "" : c).append("\n\n");
+                    });
+
+            sb.append("위 정보를 참고하여, 아래 사용자가 제공한 코드가 이 레포지터리/README 요구사항과 잘 맞는지 검토해 주세요.\n\n");
+        }
+
+        // 2) 여기부터는 JSON 형식 / 출력 규칙 안내 (기존 로직 유지)
+        sb.append("""
             너는 숙련된 시니어 백엔드 개발자이자 코드 리뷰어야.
             아래 코드를 분석해서 반드시 **JSON 형식 하나만** 출력해.
 
@@ -107,16 +167,14 @@ public class GeminiCodeReviewClient {
             }
 
             사용자가 요청한 요구사항:
-            %s
+            """).append("\n")
+                .append(userRequirement).append("\n\n")
+                .append("리뷰할 코드:\n")
+                .append(code);
 
-            리뷰할 코드:
-            %s
-            """.formatted(userRequirement, code);
+        return sb.toString();
     }
 
-    /**
-     * Gemini 응답(JSON 스트링)을 CodeReviewResponse로 변환
-     */
     private CodeReviewResponse parseGeminiResponse(String body) throws Exception {
         JsonNode root = objectMapper.readTree(body);
 
@@ -142,10 +200,8 @@ public class GeminiCodeReviewClient {
             return resp;
         }
 
-        // ```json ... ``` 형태 제거
         String cleaned = stripCodeFence(rawText);
 
-        // JSON 파싱
         try {
             JsonNode json = objectMapper.readTree(cleaned);
 
@@ -164,7 +220,6 @@ public class GeminiCodeReviewClient {
             return resp;
 
         } catch (Exception e) {
-            // JSON 파싱 실패 시 그대로 리뷰로 전달
             CodeReviewResponse resp = new CodeReviewResponse();
             resp.setReview(cleaned);
             resp.setQuestions(Collections.emptyList());
@@ -172,12 +227,6 @@ public class GeminiCodeReviewClient {
         }
     }
 
-    /**
-     *  ```json
-     *  {...}
-     *  ```
-     *  같은 코드블럭 제거
-     */
     private String stripCodeFence(String text) {
         if (text == null) return "";
         String trimmed = text.trim();
