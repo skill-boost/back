@@ -15,26 +15,41 @@ public class CodingTestDataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // EASY (5문제)
+        // =========================
+        // EASY 문제들
+        // =========================
         createExamSupervisorProblem();      // 시험 감독
         createZoacDistancingProblem();      // ZOAC 거리두기
         createDjmaxRankingProblem();        // DJMAX 랭킹
         createMinHeapProblem();             // 최소 힙
         createTriangleProblem();            // 삼각형 분류
+        createMakeOneProblem();             // 1로 만들기
+        createNumberCardProblem();          // 숫자 카드
 
-        // MEDIUM (5문제)
+        // =========================
+        // MEDIUM 문제들
+        // =========================
         createSnakeGameProblem();           // Dummy (뱀 게임)
         createDiceSimulationProblem();      // 주사위 굴리기
         createTargetDistanceProblem();      // 목표지점 거리
         createDfsBfsProblem();              // DFS와 BFS
-        createTripPlanningProblem();        // 여행 가자 (New)
+        createTripPlanningProblem();        // 여행 가자
+        createChristmasGiftProblem();       // 크리스마스 선물
+        createCardBuyingProblem();          // 카드 구매하기
+        createFireEscapeProblem();          // 불!
 
-        // HARD (5문제)
+        // =========================
+        // HARD 문제들
+        // =========================
         createMarbleEscapeProblem();        // 구슬 탈출
         createSharkCopyMagicProblem();      // 마법사 상어와 복제
         createSimilarWordsProblem();        // 비슷한 단어
         createJewelThiefProblem();          // 보석 도둑
-        createMarsExplorationProblem();     // 화성 탐사 (New)
+        createMarsExplorationProblem();     // 화성 탐사
+        createLectureTourProblem();         // 순회강연
+        createLectureRoomAssignmentProblem(); // 강의실 배정
+        createPopulationMovementProblem();  // 인구 이동
+        createPrisonBreakProblem();         // 탈옥
     }
 
     // =========================
@@ -240,7 +255,7 @@ public class CodingTestDataInitializer implements CommandLineRunner {
                 Equilateral : 세 변의 길이가 모두 같은 경우
                 Isosceles : 두 변의 길이만 같은 경우
                 Scalene : 세 변의 길이가 모두 다른 경우
-                
+
                 단 주어진 세 변의 길이가 삼각형의 조건을 만족하지 못하는 경우에는 "Invalid" 를 출력한다.
                 예를 들어 6, 3, 2가 이 경우에 해당한다.
                 가장 긴 변의 길이보다 나머지 두 변의 길이의 합이 길지 않으면 삼각형의 조건을 만족하지 못한다.
@@ -269,11 +284,90 @@ public class CodingTestDataInitializer implements CommandLineRunner {
         problemRepository.save(problem);
     }
 
+    // 6. 1로 만들기
+    private void createMakeOneProblem() {
+        if (problemRepository.existsByTitle("1로 만들기")) {
+            return;
+        }
+
+        String description = """
+                [문제]
+
+                정수 X에 사용할 수 있는 연산은 다음과 같이 세 가지 이다.
+
+                1. X가 3으로 나누어 떨어지면, 3으로 나눈다.
+                2. X가 2로 나누어 떨어지면, 2로 나눈다.
+                3. 1을 뺀다.
+
+                정수 N이 주어졌을 때, 위와 같은 연산 세 개를 적절히 사용해서 1을 만들려고 한다.
+                연산을 사용하는 횟수의 최솟값을 출력하시오.
+
+
+                [입력]
+
+                첫째 줄에 1보다 크거나 같고, 10^6보다 작거나 같은 정수 N이 주어진다.
+
+
+                [출력]
+
+                첫째 줄에 연산을 하는 횟수의 최솟값을 출력한다.
+                """;
+
+        CodingProblem problem = CodingProblem.builder()
+                .title("1로 만들기")
+                .difficulty(Difficulty.EASY)
+                .description(description)
+                .tags("dp")
+                .build();
+
+        problemRepository.save(problem);
+    }
+
+    // 7. 숫자 카드
+    private void createNumberCardProblem() {
+        if (problemRepository.existsByTitle("숫자 카드")) {
+            return;
+        }
+
+        String description = """
+                [문제]
+
+                숫자 카드는 정수 하나가 적혀져 있는 카드이다. 상근이는 숫자 카드 N개를 가지고 있다.
+                정수 M개가 주어졌을 때, 이 수가 적혀있는 숫자 카드를 상근이가 가지고 있는지 아닌지를 구하는 프로그램을 작성하시오.
+
+
+                [입력]
+
+                첫째 줄에 상근이가 가지고 있는 숫자 카드의 개수 N(1 ≤ N ≤ 500,000)이 주어진다.
+                둘째 줄에는 숫자 카드에 적혀있는 정수가 주어진다.
+                숫자 카드에 적혀있는 수는 -10,000,000보다 크거나 같고, 10,000,000보다 작거나 같다.
+                두 숫자 카드에 같은 수가 적혀있는 경우는 없다.
+
+                셋째 줄에는 M(1 ≤ M ≤ 500,000)이 주어진다.
+                넷째 줄에는 상근이가 가지고 있는 숫자 카드인지 아닌지를 구해야 할 M개의 정수가 주어진다.
+
+
+                [출력]
+
+                첫째 줄에 입력으로 주어진 M개의 수에 대해서,
+                각 수가 적힌 숫자 카드를 상근이가 가지고 있으면 1을, 아니면 0을 공백으로 구분해 출력한다.
+                """;
+
+        CodingProblem problem = CodingProblem.builder()
+                .title("숫자 카드")
+                .difficulty(Difficulty.EASY)
+                .description(description)
+                .tags("binary_search,set,implementation")
+                .build();
+
+        problemRepository.save(problem);
+    }
+
     // =========================
     // MEDIUM 문제들
     // =========================
 
-    // 6. Dummy (뱀 게임)
+    // 8. Dummy (뱀 게임)
     private void createSnakeGameProblem() {
         if (problemRepository.existsByTitle("Dummy (뱀 게임)")) {
             return;
@@ -335,7 +429,7 @@ public class CodingTestDataInitializer implements CommandLineRunner {
         problemRepository.save(problem);
     }
 
-    // 7. 주사위 굴리기
+    // 9. 주사위 굴리기
     private void createDiceSimulationProblem() {
         if (problemRepository.existsByTitle("주사위 굴리기")) {
             return;
@@ -404,7 +498,7 @@ public class CodingTestDataInitializer implements CommandLineRunner {
         problemRepository.save(problem);
     }
 
-    // 8. 목표지점 거리
+    // 10. 목표지점 거리
     private void createTargetDistanceProblem() {
         if (problemRepository.existsByTitle("목표지점 거리")) {
             return;
@@ -416,15 +510,19 @@ public class CodingTestDataInitializer implements CommandLineRunner {
                 지도가 주어지면 모든 지점에 대해서 목표지점까지의 거리를 구하여라.
                 문제를 쉽게 만들기 위해 오직 가로와 세로로만 움직일 수 있다고 하자.
 
+
                 [입력]
 
-                지도의 크기 n과 m이 주어진다. n은 세로의 크기, m은 가로의 크기다.(2 ≤ n ≤ 1000, 2 ≤ m ≤ 1000)
-                다음 n개의 줄에 m개의 숫자가 주어진다. 0은 갈 수 없는 땅이고 1은 갈 수 있는 땅, 2는 목표지점이다. 입력에서 2는 단 한개이다.
+                지도의 크기 n과 m이 주어진다. n은 세로의 크기, m은 가로의 크기다. (2 ≤ n ≤ 1000, 2 ≤ m ≤ 1000)
+                다음 n개의 줄에 m개의 숫자가 주어진다.
+                0은 갈 수 없는 땅이고 1은 갈 수 있는 땅, 2는 목표지점이다. 입력에서 2는 단 한 개이다.
+
 
                 [출력]
 
                 각 지점에서 목표지점까지의 거리를 출력한다.
-                원래 갈 수 없는 땅인 위치는 0을 출력하고, 원래 갈 수 있는 땅인 부분 중에서 도달할 수 없는 위치는 -1을 출력한다.
+                원래 갈 수 없는 땅인 위치는 0을 출력하고,
+                원래 갈 수 있는 땅인 부분 중에서 도달할 수 없는 위치는 -1을 출력한다.
                 """;
 
         CodingProblem problem = CodingProblem.builder()
@@ -437,7 +535,7 @@ public class CodingTestDataInitializer implements CommandLineRunner {
         problemRepository.save(problem);
     }
 
-    // 9. DFS와 BFS
+    // 11. DFS와 BFS
     private void createDfsBfsProblem() {
         if (problemRepository.existsByTitle("DFS와 BFS")) {
             return;
@@ -475,7 +573,7 @@ public class CodingTestDataInitializer implements CommandLineRunner {
         problemRepository.save(problem);
     }
 
-    // 10. 여행 가자 (New)
+    // 12. 여행 가자
     private void createTripPlanningProblem() {
         if (problemRepository.existsByTitle("여행 가자")) {
             return;
@@ -484,25 +582,33 @@ public class CodingTestDataInitializer implements CommandLineRunner {
         String description = """
                 [문제]
 
-                동혁이는 친구들과 함께 여행을 가려고 한다. 한국에는 도시가 N개 있고 임의의 두 도시 사이에 길이 있을 수도, 없을 수도 있다.
-                동혁이의 여행 일정이 주어졌을 때, 이 여행 경로가 가능한 것인지 알아보자. 물론 중간에 다른 도시를 경유해서 여행을 할 수도 있다.
-                예를 들어 도시가 5개 있고, A-B, B-C, A-D, B-D, E-A의 길이 있고, 동혁이의 여행 계획이 E C B C D 라면 E-A-B-C-B-C-B-D라는 여행경로를 통해 목적을 달성할 수 있다.
+                동혁이는 친구들과 함께 여행을 가려고 한다.
+                한국에는 도시가 N개 있고 임의의 두 도시 사이에 길이 있을 수도, 없을 수도 있다.
 
-                도시들의 개수와 도시들 간의 연결 여부가 주어져 있고, 동혁이의 여행 계획에 속한 도시들이 순서대로 주어졌을 때 가능한지 여부를 판별하는 프로그램을 작성하시오.
+                동혁이의 여행 일정이 주어졌을 때, 이 여행 경로가 가능한 것인지 알아보자.
+                물론 중간에 다른 도시를 경유해서 여행을 할 수도 있다.
+
+                도시들의 개수와 도시들 간의 연결 여부가 주어져 있고,
+                동혁이의 여행 계획에 속한 도시들이 순서대로 주어졌을 때 가능한지 여부를 판별하는 프로그램을 작성하시오.
                 같은 도시를 여러 번 방문하는 것도 가능하다.
 
 
                 [입력]
 
-                첫 줄에 도시의 수 N이 주어진다. N은 200이하이다. 둘째 줄에 여행 계획에 속한 도시들의 수 M이 주어진다. M은 1000이하이다.
-                다음 N개의 줄에는 N개의 정수가 주어진다. i번째 줄의 j번째 수는 i번 도시와 j번 도시의 연결 정보를 의미한다.
-                1이면 연결된 것이고 0이면 연결이 되지 않은 것이다. A와 B가 연결되었으면 B와 A도 연결되어 있다.
-                마지막 줄에는 여행 계획이 주어진다. 도시의 번호는 1부터 N까지 차례대로 매겨져 있다.
+                첫 줄에 도시의 수 N이 주어진다. (N ≤ 200)
+                둘째 줄에 여행 계획에 속한 도시들의 수 M이 주어진다. (M ≤ 1000)
+
+                다음 N개의 줄에는 N개의 정수가 주어진다.
+                i번째 줄의 j번째 수는 i번 도시와 j번 도시의 연결 정보를 의미한다.
+                1이면 연결된 것이고 0이면 연결이 되지 않은 것이다.
+
+                마지막 줄에는 여행 계획이 주어진다.
+                도시의 번호는 1부터 N까지 차례대로 매겨져 있다.
 
 
                 [출력]
 
-                첫 줄에 가능하면 YES 불가능하면 NO를 출력한다.
+                첫 줄에 가능하면 YES, 불가능하면 NO를 출력한다.
                 """;
 
         CodingProblem problem = CodingProblem.builder()
@@ -515,11 +621,163 @@ public class CodingTestDataInitializer implements CommandLineRunner {
         problemRepository.save(problem);
     }
 
+    // 13. 크리스마스 선물
+    private void createChristmasGiftProblem() {
+        if (problemRepository.existsByTitle("크리스마스 선물")) {
+            return;
+        }
+
+        String description = """
+                [문제]
+
+                크리스마스에는 산타가 착한 아이들에게 선물을 나눠준다.
+                올해도 산타는 선물을 나눠주기 위해 전 세계를 돌아다니며 착한 아이들에게 선물을 나눠줄 것이다.
+                하지만 산타의 썰매는 그렇게 크지 않기 때문에,
+                세계 곳곳에 거점들을 세워 그 곳을 방문하며 선물을 충전해 나갈 것이다.
+
+                또한, 착한 아이들을 만날 때마다 자신이 들고 있는 가장 가치가 큰 선물 하나를 선물해 줄 것이다.
+
+                이제 산타가 선물을 나눠줄 것이다.
+                차례대로 방문한 아이들과 거점지의 정보들이 주어졌을 때,
+                아이들이 받은 선물들의 가치를 출력하시오.
+                만약 아이들에게 줄 선물이 없다면 -1을 출력하시오.
+
+
+                [입력]
+
+                첫 번째 줄에는 아이들과 거점지를 방문한 횟수 n이 주어진다. (1 ≤ n ≤ 5,000)
+
+                다음 n줄에는 먼저 정수 a가 주어지고, 그 다음 a개의 숫자가 주어진다.
+                a > 0 이라면 거점지에서 a개의 선물을 충전하는 것이고,
+                이 숫자들이 선물의 가치이다.
+                만약 a가 0이라면 거점지가 아닌 아이들을 만난 것이다.
+
+                선물의 가치는 100,000보다 작은 양의 정수이다. (1 ≤ a ≤ 100)
+
+
+                [출력]
+
+                a가 0일 때마다, 아이들에게 준 선물의 가치를 출력하시오.
+                만약 줄 선물이 없다면 -1을 출력하라.
+                적어도 하나의 출력이 있음을 보장한다.
+                """;
+
+        CodingProblem problem = CodingProblem.builder()
+                .title("크리스마스 선물")
+                .difficulty(Difficulty.MEDIUM)
+                .description(description)
+                .tags("datastructure,heap,priority_queue")
+                .build();
+
+        problemRepository.save(problem);
+    }
+
+    // 14. 카드 구매하기
+    private void createCardBuyingProblem() {
+        if (problemRepository.existsByTitle("카드 구매하기")) {
+            return;
+        }
+
+        String description = """
+                [문제]
+
+                요즘 민규네 동네에서는 스타트링크에서 만든 PS카드를 모으는 것이 유행이다.
+
+                PS카드는 PS(Problem Solving) 분야에서 유명한 사람들의 아이디와 얼굴이 적혀있는 카드이다.
+                각각의 카드에는 등급을 나타내는 색이 칠해져 있고, 다음과 같이 8가지가 있다.
+
+                전설카드, 레드카드, 오렌지카드, 퍼플카드,
+                블루카드, 청록카드, 그린카드, 그레이카드
+
+                카드는 카드팩의 형태로만 구매할 수 있고,
+                카드팩의 종류는 카드 1개가 포함된 카드팩, 카드 2개가 포함된 카드팩, ...
+                카드 N개가 포함된 카드팩과 같이 총 N가지가 존재한다.
+
+                민규는 카드의 개수가 적은 팩이더라도 가격이 비싸면 높은 등급의 카드가 많이 들어있을 것이라는 미신을 믿고 있다.
+                따라서, 민규는 돈을 최대한 많이 지불해서 카드 N개를 구매하려고 한다.
+
+                카드가 i개 포함된 카드팩의 가격은 Pi원이다.
+
+
+                [입력]
+
+                첫째 줄에 민규가 구매하려고 하는 카드의 개수 N이 주어진다. (1 ≤ N ≤ 1,000)
+                둘째 줄에는 P1부터 PN까지 카드팩의 가격 Pi가 주어진다. (1 ≤ Pi ≤ 10,000)
+
+
+                [출력]
+
+                민규가 카드 N개를 갖기 위해 지불해야 하는 금액의 최댓값을 출력한다.
+                구매한 카드팩에 포함된 카드 개수의 합은 정확히 N과 같아야 한다.
+                """;
+
+        CodingProblem problem = CodingProblem.builder()
+                .title("카드 구매하기")
+                .difficulty(Difficulty.MEDIUM)
+                .description(description)
+                .tags("dp,knapsack")
+                .build();
+
+        problemRepository.save(problem);
+    }
+
+    // 15. 불!
+    private void createFireEscapeProblem() {
+        if (problemRepository.existsByTitle("불!")) {
+            return;
+        }
+
+        String description = """
+                [문제]
+
+                상근이는 빈 공간과 벽으로 이루어진 건물에 갇혀있다.
+                건물의 일부에는 불이 났고, 상근이는 출구를 향해 뛰고 있다.
+
+                매 초마다, 불은 동서남북 방향으로 인접한 빈 공간으로 퍼져나간다.
+                벽에는 불이 붙지 않는다.
+                상근이는 동서남북 인접한 칸으로 이동할 수 있으며, 1초가 걸린다.
+                상근이는 벽을 통과할 수 없고,
+                불이 옮겨진 칸 또는 이제 불이 붙으려는 칸으로 이동할 수 없다.
+                상근이가 있는 칸에 불이 옮겨옴과 동시에 다른 칸으로 이동할 수 있다.
+
+                빌딩의 지도가 주어졌을 때,
+                얼마나 빨리 빌딩을 탈출할 수 있는지 구하는 프로그램을 작성하시오.
+
+
+                [입력]
+
+                첫째 줄에 테스트 케이스의 개수가 주어진다. (최대 100개)
+
+                각 테스트 케이스의 첫째 줄에는 빌딩 지도의 너비 w와 높이 h가 주어진다. (1 ≤ w, h ≤ 1000)
+                다음 h개 줄에는 w개의 문자로 빌딩의 지도가 주어진다.
+
+                '.' : 빈 공간
+                '#' : 벽
+                '@' : 상근이의 시작 위치
+                '*' : 불
+
+
+                [출력]
+
+                각 테스트 케이스마다 빌딩을 탈출하는데 가장 빠른 시간을 출력한다.
+                빌딩을 탈출할 수 없는 경우에는 "IMPOSSIBLE"을 출력한다.
+                """;
+
+        CodingProblem problem = CodingProblem.builder()
+                .title("불!")
+                .difficulty(Difficulty.MEDIUM)
+                .description(description)
+                .tags("bfs,graph,multi_source_bfs")
+                .build();
+
+        problemRepository.save(problem);
+    }
+
     // =========================
     // HARD 문제들
     // =========================
 
-    // 11. 구슬 탈출
+    // 16. 구슬 탈출 (이미 기존에 있던 문제)
     private void createMarbleEscapeProblem() {
         if (problemRepository.existsByTitle("구슬 탈출")) {
             return;
@@ -537,7 +795,7 @@ public class CodingTestDataInitializer implements CommandLineRunner {
                 빨간 구슬과 파란 구슬의 크기는 보드에서 1×1 크기의 칸을 가득 채우는 사이즈이고,
                 각각 하나씩 들어가 있다.
 
-                이때, 구슬을 손으로 건드릴 수는 없고, 중력을 이용해서 이리 저리 굴려야 한다.
+                이때, 구슬을 손으로 건드릴 수는 없고, 중력을 이용해서 이리저리 굴려야 한다.
                 왼쪽으로 기울이기, 오른쪽으로 기울이기, 위쪽으로 기울이기,
                 아래쪽으로 기울이기와 같은 네 가지 동작이 가능하다.
 
@@ -581,7 +839,7 @@ public class CodingTestDataInitializer implements CommandLineRunner {
         problemRepository.save(problem);
     }
 
-    // 12. 마법사 상어와 복제
+    // 17. 마법사 상어와 복제
     private void createSharkCopyMagicProblem() {
         if (problemRepository.existsByTitle("마법사 상어와 복제")) {
             return;
@@ -590,52 +848,28 @@ public class CodingTestDataInitializer implements CommandLineRunner {
         String description = """
                 [문제]
 
-                마법사 상어는 파이어볼, 토네이도, 파이어스톰, 물복사버그, 비바라기, 블리자드 마법을 할 수 있다.
-                오늘은 기존에 배운 물복사버그 마법의 상위 마법인 복제를 배웠고,
+                마법사 상어는 물복사버그 마법의 상위 마법인 복제를 배웠고,
                 4 × 4 크기의 격자에서 연습하려고 한다.
-                (r, c)는 격자의 r행 c열을 의미한다.
-                격자의 가장 왼쪽 윗 칸은 (1, 1)이고, 가장 오른쪽 아랫 칸은 (4, 4)이다.
 
                 격자에는 물고기 M마리가 있다.
                 각 물고기는 격자의 칸 하나에 들어가 있으며, 이동 방향을 가지고 있다.
                 이동 방향은 8가지 방향(상하좌우, 대각선) 중 하나이다.
-                마법사 상어도 연습을 위해 격자에 들어가있다.
-                상어도 격자의 한 칸에 들어가있다.
-                둘 이상의 물고기가 같은 칸에 있을 수도 있으며,
-                마법사 상어와 물고기가 같은 칸에 있을 수도 있다.
+                마법사 상어도 연습을 위해 격자에 들어가 있다.
 
                 상어의 마법 연습 한 번은 다음과 같은 작업이 순차적으로 이루어진다.
 
                 1. 상어가 모든 물고기에게 복제 마법을 시전한다.
-                   복제 마법은 시간이 조금 걸리기 때문에, 아래 5번에서 물고기가 복제되어 나타난다.
-
                 2. 모든 물고기가 한 칸 이동한다.
-                   상어가 있는 칸, 물고기의 냄새가 있는 칸, 격자의 범위를 벗어나는 칸으로는 이동할 수 없다.
-                   각 물고기는 자신이 가지고 있는 이동 방향이 이동할 수 있는 칸을 향할 때까지
-                   방향을 45도 반시계 회전시킨다.
-                   이동할 수 있는 칸이 없으면 이동하지 않는다.
-
-                3. 상어가 연속해서 3칸 이동한다.
-                   상어는 상하좌우로 인접한 칸으로 이동할 수 있다.
-                   이동 중 격자를 벗어나면 그 방법은 불가능하다.
-                   이동 중 물고기가 있는 칸에 도착하면, 그 칸의 모든 물고기는 제거되고 냄새를 남긴다.
-                   가능한 이동 방법 중 제거되는 물고기가 가장 많은 방법을 선택하며,
-                   동일하다면 사전순으로 가장 앞서는 방법을 선택한다.
-
+                3. 상어가 연속해서 3칸 이동하면서 물고기를 먹고 냄새를 남긴다.
                 4. 두 번 전 연습에서 생긴 물고기의 냄새가 격자에서 사라진다.
-
                 5. 1에서 사용된 복제 마법이 완료되어 복제된 물고기가 생성된다.
 
 
                 [입력]
 
                 첫째 줄에 물고기의 수 M, 연습 횟수 S가 주어진다.
-                다음 M개의 줄에는 물고기의 정보 (fx, fy, d)가 주어지며,
-                d는 1~8 방향을 의미한다. (←, ↖, ↑, ↗, →, ↘, ↓, ↙)
-
+                다음 M개의 줄에는 물고기의 정보 (fx, fy, d)가 주어진다.
                 마지막 줄에는 상어의 위치 (sx, sy)가 주어진다.
-
-                격자 위에 있는 물고기의 수가 항상 1,000,000 이하인 입력만 주어진다.
 
 
                 [출력]
@@ -653,7 +887,7 @@ public class CodingTestDataInitializer implements CommandLineRunner {
         problemRepository.save(problem);
     }
 
-    // 13. 비슷한 단어
+    // 18. 비슷한 단어
     private void createSimilarWordsProblem() {
         if (problemRepository.existsByTitle("비슷한 단어")) {
             return;
@@ -667,12 +901,6 @@ public class CodingTestDataInitializer implements CommandLineRunner {
                 두 단어의 비슷한 정도는 두 단어의 접두사의 길이로 측정한다.
                 접두사란 두 단어의 앞부분에서 공통적으로 나타나는 부분문자열을 말한다.
                 즉, 두 단어의 앞에서부터 M개의 글자들이 같으면서 M이 최대인 경우를 구하는 것이다.
-                "AHEHHEH", "AHAHEH"의 접두사는 "AH"가 되고, "AB", "CD"의 접두사는 ""(길이가 0)이 된다.
-
-                접두사의 길이가 최대인 경우가 여러 개일 때에는 입력되는 순서대로 제일 앞쪽에 있는 단어를 답으로 한다.
-                즉, 답으로 S라는 문자열과 T라는 문자열을 출력한다고 했을 때,
-                우선 S가 입력되는 순서대로 제일 앞쪽에 있는 단어인 경우를 출력하고,
-                그런 경우도 여러 개 있을 때에는 그 중에서 T가 입력되는 순서대로 제일 앞쪽에 있는 단어인 경우를 출력한다.
 
 
                 [입력]
@@ -683,8 +911,8 @@ public class CodingTestDataInitializer implements CommandLineRunner {
 
                 [출력]
 
-                첫째 줄에 S를, 둘째 줄에 T를 출력한다.
-                단, 이 두 단어는 서로 달라야 한다. 즉, 가장 비슷한 두 단어를 구할 때 같은 단어는 제외하는 것이다.
+                가장 비슷한 두 단어 S, T를 한 줄에 하나씩 출력한다.
+                두 단어는 서로 달라야 한다.
                 """;
 
         CodingProblem problem = CodingProblem.builder()
@@ -697,7 +925,7 @@ public class CodingTestDataInitializer implements CommandLineRunner {
         problemRepository.save(problem);
     }
 
-    // 14. 보석 도둑
+    // 19. 보석 도둑
     private void createJewelThiefProblem() {
         if (problemRepository.existsByTitle("보석 도둑")) {
             return;
@@ -707,23 +935,26 @@ public class CodingTestDataInitializer implements CommandLineRunner {
                 [문제]
 
                 세계적인 도둑 상덕이는 보석점을 털기로 결심했다.
-                상덕이가 털 보석점에는 보석이 총 N개 있다. 각 보석은 무게 Mi와 가격 Vi를 가지고 있다.
-                상덕이는 가방을 K개 가지고 있고, 각 가방에 담을 수 있는 최대 무게는 Ci이다.
+                상덕이가 털 보석점에는 보석이 총 N개 있다.
+                각 보석은 무게 Mi와 가격 Vi를 가지고 있다.
+
+                상덕이는 가방을 K개 가지고 있고,
+                각 가방에 담을 수 있는 최대 무게는 Ci이다.
                 가방에는 최대 한 개의 보석만 넣을 수 있다.
-                상덕이가 훔칠 수 있는 보석의 최대 가격을 구하는 프로그램을 작성하시오.
+
+                상덕이가 훔칠 수 있는 보석의 최대 가격 합을 구하는 프로그램을 작성하시오.
 
 
                 [입력]
 
                 첫째 줄에 N과 K가 주어진다. (1 ≤ N, K ≤ 300,000)
-                다음 N개 줄에는 각 보석의 정보 Mi와 Vi가 주어진다. (0 ≤ Mi, Vi ≤ 1,000,000)
-                다음 K개 줄에는 가방에 담을 수 있는 최대 무게 Ci가 주어진다. (1 ≤ Ci ≤ 100,000,000)
-                모든 숫자는 양의 정수이다.
+                다음 N개 줄에는 각 보석의 정보 Mi와 Vi가 주어진다.
+                다음 K개 줄에는 가방에 담을 수 있는 최대 무게 Ci가 주어진다.
 
 
                 [출력]
 
-                첫째 줄에 상덕이가 훔칠 수 있는 보석 가격의 합의 최댓값을 출력한다.
+                상덕이가 훔칠 수 있는 보석 가격의 합의 최댓값을 출력한다.
                 """;
 
         CodingProblem problem = CodingProblem.builder()
@@ -736,7 +967,7 @@ public class CodingTestDataInitializer implements CommandLineRunner {
         problemRepository.save(problem);
     }
 
-    // 15. 화성 탐사 (New)
+    // 20. 화성 탐사
     private void createMarsExplorationProblem() {
         if (problemRepository.existsByTitle("화성 탐사")) {
             return;
@@ -745,24 +976,29 @@ public class CodingTestDataInitializer implements CommandLineRunner {
         String description = """
                 [문제]
 
-                NASA에서는 화성 탐사를 위해 화성에 무선 조종 로봇을 보냈다. 실제 화성의 모습은 굉장히 복잡하지만,
-                로봇의 메모리가 얼마 안 되기 때문에 지형을 N×M 배열로 단순화 하여 생각하기로 한다.
-                지형의 고저차의 특성상, 로봇은 움직일 때 배열에서 왼쪽, 오른쪽, 아래쪽으로 이동할 수 있지만, 위쪽으로는 이동할 수 없다.
-                또한 한 번 탐사한 지역(배열에서 하나의 칸)은 탐사하지 않기로 한다.
+                NASA에서는 화성 탐사를 위해 화성에 무선 조종 로봇을 보냈다.
+                실제 화성의 모습은 복잡하지만,
+                로봇의 메모리가 적기 때문에 지형을 N×M 배열로 단순화하여 생각하기로 한다.
 
-                각각의 지역은 탐사 가치가 있는데, 로봇을 배열의 왼쪽 위 (1, 1)에서 출발시켜 오른쪽 아래 (N, M)으로 보내려고 한다.
-                이때, 위의 조건을 만족하면서, 탐사한 지역들의 가치의 합이 최대가 되도록 하는 프로그램을 작성하시오.
+                지형의 특성상, 로봇은 배열에서 왼쪽, 오른쪽, 아래쪽으로 이동할 수 있지만,
+                위쪽으로는 이동할 수 없다.
+                또한 한 번 탐사한 지역은 다시 탐사하지 않는다.
+
+                각각의 지역은 탐사 가치가 있는데,
+                로봇을 배열의 왼쪽 위 (1, 1)에서 출발시켜 오른쪽 아래 (N, M)으로 보내려고 한다.
+                이때, 위의 조건을 만족하면서 탐사한 지역들의 가치 합의 최댓값을 구하는 프로그램을 작성하시오.
 
 
                 [입력]
 
-                첫째 줄에 N, M(1≤N, M≤1,000)이 주어진다. 다음 N개의 줄에는 M개의 수로 배열이 주어진다.
-                배열의 각 수는 절댓값이 100을 넘지 않는 정수이다. 이 값은 그 지역의 가치를 나타낸다.
+                첫째 줄에 N, M(1 ≤ N, M ≤ 1,000)이 주어진다.
+                다음 N개의 줄에는 M개의 정수로 배열이 주어진다.
+                각 값은 그 지역의 가치를 나타내며, 절댓값이 100을 넘지 않는다.
 
 
                 [출력]
 
-                첫째 줄에 최대 가치의 합을 출력한다.
+                최대 가치의 합을 출력한다.
                 """;
 
         CodingProblem problem = CodingProblem.builder()
@@ -770,6 +1006,182 @@ public class CodingTestDataInitializer implements CommandLineRunner {
                 .difficulty(Difficulty.HARD)
                 .description(description)
                 .tags("dp")
+                .build();
+
+        problemRepository.save(problem);
+    }
+
+    // 21. 순회강연
+    private void createLectureTourProblem() {
+        if (problemRepository.existsByTitle("순회강연")) {
+            return;
+        }
+
+        String description = """
+                [문제]
+
+                한 저명한 학자에게 n(0 ≤ n ≤ 10,000)개의 대학에서 강연 요청을 해 왔다.
+                각 대학에서는 d(1 ≤ d ≤ 10,000)일 안에 와서 강연을 해 주면
+                p(1 ≤ p ≤ 10,000)만큼의 강연료를 지불하겠다고 알려왔다.
+
+                이 학자는 하루에 최대 한 곳에서만 강연을 할 수 있고,
+                가장 많은 돈을 벌 수 있도록 일정표를 짜려고 한다.
+
+
+                [입력]
+
+                첫째 줄에 정수 n이 주어진다.
+                다음 n개의 줄에는 각 대학에서 제시한 p와 d가 주어진다.
+
+
+                [출력]
+
+                첫째 줄에 최대로 벌 수 있는 돈을 출력한다.
+                """;
+
+        CodingProblem problem = CodingProblem.builder()
+                .title("순회강연")
+                .difficulty(Difficulty.HARD)
+                .description(description)
+                .tags("greedy,priority_queue,sorting")
+                .build();
+
+        problemRepository.save(problem);
+    }
+
+    // 22. 강의실 배정
+    private void createLectureRoomAssignmentProblem() {
+        if (problemRepository.existsByTitle("강의실 배정")) {
+            return;
+        }
+
+        String description = """
+                [문제]
+
+                N개의 강의가 있다. 우리는 모든 강의의 시작 시간과 끝나는 시간을 알고 있다.
+                이때, 우리는 최대한 적은 수의 강의실을 사용하여
+                모든 강의가 이루어지게 하고 싶다.
+
+                한 강의실에서는 동시에 2개 이상의 강의를 진행할 수 없고,
+                한 강의의 종료 시간과 다른 강의의 시작 시간이 겹치는 것은 상관없다.
+
+                필요한 최소 강의실의 수를 구하는 프로그램을 작성하시오.
+
+
+                [입력]
+
+                첫째 줄에 강의의 개수 N(1 ≤ N ≤ 100,000)이 주어진다.
+                둘째 줄부터 N개의 줄에 걸쳐 각 줄마다 세 개의 정수가 주어진다.
+                각 줄은 강의 번호, 강의 시작 시간, 강의 종료 시간을 의미한다.
+                시작 시간과 종료 시간은 0 이상 10억 이하의 정수이고, 시작 < 종료 이다.
+
+
+                [출력]
+
+                필요한 최소 강의실 개수를 출력한다.
+                """;
+
+        CodingProblem problem = CodingProblem.builder()
+                .title("강의실 배정")
+                .difficulty(Difficulty.HARD)
+                .description(description)
+                .tags("greedy,priority_queue,sorting")
+                .build();
+
+        problemRepository.save(problem);
+    }
+
+    // 23. 인구 이동
+    private void createPopulationMovementProblem() {
+        if (problemRepository.existsByTitle("인구 이동")) {
+            return;
+        }
+
+        String description = """
+                [문제]
+
+                N×N 크기의 땅이 있고, 각각의 칸에는 나라가 하나씩 있다.
+                r행 c열에 있는 나라에는 A[r][c]명이 살고 있다.
+
+                인접한 나라 사이에는 국경선이 존재하며,
+                두 나라의 인구 차이가 L명 이상, R명 이하라면
+                국경선을 오늘 하루 동안 연다.
+
+                국경선이 열려있어 인접한 칸만을 이용해 이동할 수 있는 나라들을 연합이라고 하고,
+                연합을 이루고 있는 각 칸의 인구수는
+                (연합의 인구수 합) / (연합을 이루는 칸의 개수)로 바뀐다. (소수점 버림)
+
+                더 이상 인구 이동이 일어나지 않을 때까지 반복될 때,
+                인구 이동이 며칠 동안 발생하는지 구하는 프로그램을 작성하시오.
+
+
+                [입력]
+
+                첫째 줄에 N, L, R이 주어진다. (1 ≤ N ≤ 50, 1 ≤ L ≤ R ≤ 100)
+                둘째 줄부터 N개의 줄에 각 나라의 인구수가 주어진다. (0 ≤ A[r][c] ≤ 100)
+
+
+                [출력]
+
+                인구 이동이 발생한 일수를 출력한다.
+                """;
+
+        CodingProblem problem = CodingProblem.builder()
+                .title("인구 이동")
+                .difficulty(Difficulty.HARD)
+                .description(description)
+                .tags("simulation,bfs,graph")
+                .build();
+
+        problemRepository.save(problem);
+    }
+
+    // 24. 탈옥
+    private void createPrisonBreakProblem() {
+        if (problemRepository.existsByTitle("탈옥")) {
+            return;
+        }
+
+        String description = """
+                [문제]
+
+                상근이는 감옥에서 죄수 두 명을 탈옥시켜야 한다.
+                감옥은 1층짜리 건물이고, 감옥의 평면도가 주어진다.
+
+                평면도에는 모든 벽과 문이 나타나 있고, 죄수의 위치도 나타나 있다.
+                감옥은 무인 감옥으로 죄수 두 명이 감옥에 있는 유일한 사람이다.
+
+                문은 중앙 제어실에서만 열 수 있지만,
+                상근이는 특별한 기술을 이용해 제어실을 통하지 않고 문을 열려고 한다.
+                하지만 문을 열려면 시간이 매우 많이 걸리기 때문에,
+                두 죄수를 탈옥시키기 위해 열어야 하는 문의 개수를 최소화하려고 한다.
+
+                문을 한 번 열면 계속 열린 상태로 있는다.
+
+
+                [입력]
+
+                첫째 줄에 테스트 케이스의 개수가 주어진다. (100 이하)
+
+                각 테스트 케이스의 첫 줄에는 평면도의 높이 h와 너비 w가 주어진다. (2 ≤ h, w ≤ 100)
+                다음 h개 줄에는 감옥의 평면도 정보가 주어지며,
+                빈 공간은 '.', 벽은 '*', 문은 '#', 죄수는 '$'로 주어진다.
+
+                상근이는 감옥 밖을 자유롭게 이동할 수 있고,
+                평면도에 표시된 죄수의 수는 항상 두 명이다.
+
+
+                [출력]
+
+                각 테스트 케이스마다 두 죄수를 탈옥시키기 위해서
+                열어야 하는 문의 최솟값을 출력한다.
+                """;
+
+        CodingProblem problem = CodingProblem.builder()
+                .title("탈옥")
+                .difficulty(Difficulty.HARD)
+                .description(description)
+                .tags("graph,bfs,0_1_bfs")
                 .build();
 
         problemRepository.save(problem);

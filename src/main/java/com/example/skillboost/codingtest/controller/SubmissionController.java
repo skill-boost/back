@@ -17,13 +17,16 @@ public class SubmissionController {
 
     private final GradingService gradingService;
 
+    /**
+     * 코딩 테스트 제출 + 채점
+     * POST /api/coding/submissions
+     */
     @PostMapping("/submissions")
-    public ResponseEntity<SubmissionResultDto> submitCode(@RequestBody SubmissionRequestDto request) {
+    public ResponseEntity<SubmissionResultDto> submit(@RequestBody SubmissionRequestDto request) {
+        log.info("코딩테스트 제출 요청: problemId={}, language={}, userId={}",
+                request.getProblemId(), request.getLanguage(), request.getUserId());
 
-        log.info("채점 요청 도착: problemId={}, language={}",
-                request.getProblemId(), request.getLanguage());
-
-        if (request.getCode() == null || request.getCode().isEmpty()) {
+        if (request.getCode() == null || request.getCode().isBlank()) {
             return ResponseEntity.badRequest().body(
                     SubmissionResultDto.builder()
                             .status("ERROR")
