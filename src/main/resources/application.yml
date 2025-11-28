@@ -22,6 +22,4 @@ server:
   port: 8080
 
 gemini:
-  api:
-    key: #
   model: gemini-2.5-flash
