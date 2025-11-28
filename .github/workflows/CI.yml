@@ -1,6 +1,7 @@
 name: pull request CI
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - main
@@ -23,23 +24,6 @@ jobs:
           java-version: '21'
           cache: 'gradle'
 
-      # docker-compose(v1) 설치 스텝
-      - name: Install docker-compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" \
-            -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-
-      # 도커 컴포즈
-      - name: Start docker-compose
-        run: |
-          docker-compose up -d 
-          
-          # MySQL이 ready 될 때까지 대기 (최대 30초)
-          timeout 30 bash -c 'until docker-compose exec -T mysql mysqladmin ping -h localhost --silent; do sleep 1; done'
-          
-          echo "MySQL is ready!"
-
       # Gradle wrapper 실행 권한 부여
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -59,8 +43,3 @@ jobs:
           path: |
             build/reports/tests/test/
             build/test-results/test/
-
-      # 도커 컴포즈 종료
-      - name: Docker Compose Down
-        if: always()
-        run: docker-compose down -v
