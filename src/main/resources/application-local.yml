@@ -1,31 +1,26 @@
-# 서버 포트 설정
 server:
   port: 8080
 
-# Spring Boot 애플리케이션 기본 설정
 spring:
   application:
     name: skill-boost
-
-  # JPA 설정 (테이블 자동 생성을 위해 ddl-auto: update 추가)
+  
   jpa:
     hibernate:
       ddl-auto: update
-      # (선택사항) 실행되는 SQL을 로그로 보려면 주석 해제
-      # show-sql: true
+    show-sql: true
 
-  # GitHub OAuth2 로그인 설정
   security:
     oauth2:
       client:
         registration:
           github:
             client-id: Ov23liXAPa0etQe0EisI
-            client-secret:  ${GITHUB_CLIENT_SECRET} # .env 파일에서 읽어옴
+            client-secret: a5dc74aff160176ad62591fbe3d2c0a839eb1ef6
             scope:
               - read:user
               - user:email
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            redirect-uri: http://localhost:8080/login/oauth2/code/github
         provider:
           github:
             authorization-uri: https://github.com/login/oauth/authorize
@@ -33,15 +28,13 @@ spring:
             user-info-uri: https://api.github.com/user
             user-name-attribute: id
 
-# SpringDoc (Swagger) 설정
+jwt:
+  secret-key: TXlTdXBlclNlY3JldEtleUZvclNraWxsQm9vc3RQcm9qZWN0MjAyNUNoYWxsZW5nZSE=
+  expiration-ms: 86400000
+
 springdoc:
   api-docs:
     enabled: true
   swagger-ui:
     enabled: true
     path: /swagger-ui.html
-
-# JWT 토큰 설정
-jwt:
-  secret-key: ${JWT_SECRET_KEY} # .env 파일에서 읽어옴
-  expiration-ms: 86400000  # 토큰 만료 시간 (24시간)
