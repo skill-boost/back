@@ -2,6 +2,7 @@ package com.example.skillboost.codingtest.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -10,32 +11,60 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "coding_submission")
 public class CodingSubmission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "problem_id")
-    private CodingProblem problem;
+    // 문제 ID
+    @Column(nullable = false)
+    private Long problemId;
 
-    // ★ [추가] 누가 풀었는지 저장해야 합니다!
+    // 유저 ID
+    @Column(nullable = false)
     private Long userId;
 
+    // 사용 언어 (python / java / cpp ...)
+    @Column(length = 20)
     private String language;
 
-    @Column(columnDefinition = "TEXT")
+    // 제출 코드
+    @Lob
+    @Column(nullable = false)
     private String sourceCode;
 
-    private String verdict;
-    private int passedCount;
-    private int totalCount;
+    // "AC", "WA", "PARTIAL", "ERROR" 등
+    @Column(length = 20)
+    private String status;
 
+    // 0 ~ 100 점
+    private Integer score;
+
+    // 통과/전체 테스트 수
+    private Integer passedCount;
+    private Integer totalCount;
+
+    // 간단 메시지
+    @Column(length = 255)
+    private String message;
+
+    // 🔹 AI 코드 리뷰 (TEXT)
+    @Lob
+    private String aiFeedback;
+
+    // 🔥 예상 면접 질문 (JSON 문자열로 저장)
+    @Lob
+    private String interviewQuestionsJson;
+
+    // 생성 시각
     private LocalDateTime createdAt;
 
     @PrePersist
     public void onCreate() {
-        this.createdAt = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
     }
 }

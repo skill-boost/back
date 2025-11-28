@@ -6,24 +6,32 @@ import com.example.skillboost.codingtest.dto.SubmissionResultDto;
 import com.example.skillboost.codingtest.judge.GeminiJudge;
 import com.example.skillboost.codingtest.repository.CodingProblemRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GradingService {
 
     private final CodingProblemRepository problemRepository;
-    private final GeminiJudge judge;
+    private final GeminiJudge geminiJudge;
 
+    /**
+     * 실제 AI 기반 채점
+     */
     public SubmissionResultDto grade(SubmissionRequestDto request) {
 
+        // 1) 문제 조회
         CodingProblem problem = problemRepository.findById(request.getProblemId())
                 .orElseThrow(() -> new IllegalArgumentException("문제를 찾을 수 없습니다."));
 
-        // DB에 제출 저장 같은 건 나중에 하고,
-        // 일단 AI 채점만 연결
-        return judge.grade(problem, request.getCode(), request.getLanguage());
+        // 2) AI 채점 실행
+        SubmissionResultDto aiResult = geminiJudge.grade(
+                problem,
+                request.getCode(),
+                request.getLanguage()
+        );
+
+        // 3) 결과 그대로 반환 (AI가 최종 판정)
+        return aiResult;
     }
 }
