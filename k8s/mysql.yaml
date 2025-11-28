@@ -31,12 +31,13 @@ spec:
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: 5Gi
+            storage: 1Gi
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: mysql
+  namespace: default
 spec:
   selector:
     app: mysql
