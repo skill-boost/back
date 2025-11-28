@@ -25,28 +25,15 @@ repositories {
 }
 
 dependencies {
-    // 기본 Spring Web + JPA + Validation
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
-    // ⭐ AI 요청에 필요한 JSON 처리기 (Jackson)
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
-
-    // 내장 DB
-    implementation 'com.h2database:h2'
-    runtimeOnly 'com.mysql:mysql-connector-j'
-
-    // lombok
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-
-    // 개발 환경
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
-
-    // 테스트
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'com.h2database:h2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
