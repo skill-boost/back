@@ -23,5 +23,5 @@ server:
 
 gemini:
   api:
-    key: ##
+    key: #
   model: gemini-2.5-flash
