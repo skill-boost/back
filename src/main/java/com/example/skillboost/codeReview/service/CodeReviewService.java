@@ -1,5 +1,6 @@
-package com.example.skillboost.githubReader;
+package com.example.skillboost.codeReview.service;
 
+import com.example.skillboost.codeReview.GithubFile;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -9,7 +10,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class AIReviewService {
+public class CodeReviewService {
 
     private final WebClient webClient;
 
@@ -19,7 +20,7 @@ public class AIReviewService {
     @Value("${gemini.model:gemini-2.5-flash}")
     private String geminiModel;
 
-    public AIReviewService(WebClient.Builder webClientBuilder) {
+    public CodeReviewService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder
                 .baseUrl("https://generativelanguage.googleapis.com")
                 .build();
