@@ -29,7 +29,7 @@ spring:
             user-name-attribute: id
 
 jwt:
-  secret-key: TXlTdXBlclNlY3JldEtleUZvclNraWxsQm9vc3RQcm9qZWN0MjAyNUNoYWxsZW5nZSE=
+  secret-key:
   expiration-ms: 86400000
 
 springdoc:

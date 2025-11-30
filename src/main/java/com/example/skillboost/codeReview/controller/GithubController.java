@@ -1,5 +1,7 @@
-package com.example.skillboost.githubReader;
+package com.example.skillboost.codeReview.controller;
 
+import com.example.skillboost.codeReview.GithubFile;
+import com.example.skillboost.codeReview.service.GithubService;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
