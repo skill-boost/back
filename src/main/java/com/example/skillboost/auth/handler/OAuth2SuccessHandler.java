@@ -15,6 +15,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,18 +61,33 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         log.info("JWT 토큰 생성 및 Redis 저장 완료: {}", user.getEmail());
 
+        String frontendBaseUrl = "http://localhost:3000";  // 배포 시에는 Vercel 주소로 변경
+
+        // 프론트로 리다이렉트 (Vite dev 서버 기준)
+        String redirectUrl = frontendBaseUrl
+                + "/oauth/github/callback"
+                + "?accessToken=" + URLEncoder.encode(accessToken, StandardCharsets.UTF_8)
+                + "&refreshToken=" + URLEncoder.encode(refreshToken, StandardCharsets.UTF_8)
+                + "&email=" + URLEncoder.encode(user.getEmail(), StandardCharsets.UTF_8)
+                + "&username=" + URLEncoder.encode(
+                user.getUsername() != null ? user.getUsername() : "",
+                StandardCharsets.UTF_8
+        );
+
+        log.info("프론트로 리다이렉트: {}", redirectUrl);
+        response.sendRedirect(redirectUrl);
         // JSON 응답 생성
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("success", true);
-        responseData.put("accessToken", accessToken);
-        responseData.put("refreshToken", refreshToken); // 프론트엔드에서 저장해야 함
-        responseData.put("email", user.getEmail());
-        responseData.put("username", user.getUsername());
+        // Map<String, Object> responseData = new HashMap<>();
+        // responseData.put("success", true);
+        // responseData.put("accessToken", accessToken);
+        // responseData.put("refreshToken", refreshToken); // 프론트엔드에서 저장해야 함
+        // responseData.put("email", user.getEmail());
+        // responseData.put("username", user.getUsername());
 
         // 클라이언트에 JWT 응답
-        response.setContentType("application/json;charset=UTF-8");
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().write(objectMapper.writeValueAsString(responseData));
+        // response.setContentType("application/json;charset=UTF-8");
+        // response.setStatus(HttpServletResponse.SC_OK);
+        // response.getWriter().write(objectMapper.writeValueAsString(responseData));
 
         // 실제 서비스 배포 시, 사용자를 다시 웹사이트 메인 화면으로 돌려보내기 위해 사용
         // response.sendRedirect("http://localhost:3000/oauth2/redirect?accessToken=" + accessToken + "&refreshToken=" + refreshToken);
