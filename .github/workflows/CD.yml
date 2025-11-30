@@ -108,6 +108,7 @@ jobs:
               MYSQL_URL: "${{ secrets.MYSQL_URL }}"
               JWT_SECRET_KEY: "${{ secrets.JWT_SECRET_KEY }}"
               GITHUB_CLIENT_SECRET: "${{ secrets.GITHUB_CLIENT_SECRET }}"
+              GEMINI_KEY: "${{ secrets.GEMINI_KEY }}"
             EOF
 
             # -- 매니페스트 파일 적용 --
