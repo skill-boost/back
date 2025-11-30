@@ -1,12 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: springboot-app
+  name: skill-boost-app
+  namespace: default
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: springboot-app
+      app: skill-boost-app
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -15,39 +16,51 @@ spec:
   template:
     metadata:
       labels:
-        app: springboot-app
+        app: skill-boost-app
     spec:
       containers:
-        - name: springboot-app
-          image: springboot-app:latest
+        - name: skill-boost-app
+          image: IMAGE
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+            - name: SPRING_REDIS_HOST
+              value: "redis.redis.svc.cluster.local"
+            - name: SPRING_REDIS_PORT
+              value: "6379"
           envFrom:
             - secretRef:
                 name: db-secret
+            - secretRef:
+                name: app-secret
 ---
 apiVersion: v1
 kind: Service
 metadata:
+  name: skill-boost-service
+  namespace: default
   labels:
-    app: springboot-app
+    app: skill-boost-app
 spec:
   ports:
     - port: 80
       protocol: TCP
       targetPort: 8080
   selector:
-    app: springboot-app
+    app: skill-boost-app
   sessionAffinity: None
   type: ClusterIP
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: springboot-ingress
-  annotations:
-    kubernetes.io/ingress.class: traefik
+  name: skill-boost-app-ingress
+  namespace: default
 spec:
+  ingressClassName: traefik
   rules:
     - http:
         paths:
@@ -55,6 +68,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: springboot-app
+                name: skill-boost-service
                 port:
                   number: 80

@@ -1,0 +1,135 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 코드 체크아웃
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # DockerHub 로그인
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Docker 이미지 빌드 & 푸시
+      - name: Build and Push Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/skill-boost:${{ github.sha }} .
+          docker push ${{ secrets.DOCKER_USERNAME }}/skill-boost:${{ github.sha }}
+
+      # EC2로 yaml 파일 복사
+      - name: Copy k8s manifests to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "k8s/*.yaml"
+          target: "/home/${{ secrets.EC2_USER }}/k8s-manifests"
+
+      # SSH 접속 후 app.yaml의 IMAGE 치환
+      - name: Replace IMAGE in app.yaml on EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # k8s 매니페스트 디렉토리
+            MANIFEST_DIR="/home/${{ secrets.EC2_USER }}/k8s-manifests/k8s"
+
+            # IMAGE를 GitHub Secret 값으로 치환
+            sed -i "s|IMAGE|${{ secrets.DOCKER_USERNAME }}/skill-boost:${{ github.sha }}|g" "$MANIFEST_DIR/app.yaml"
+
+            echo "✅ app.yaml의 USERNAME 치환 완료"
+
+#      # Github Actions IP 가져오기
+#      - name: Get Github Actions IP
+#        id: ip
+#        uses: haythem/public-ip@v1.2
+#
+#      # AWS 보안 그룹에 동적으로 IP 추가
+#      - name: Add Github Actions IP to Security group
+#        run: |
+#          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SECRET_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+#        env:
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          AWS_DEFAULT_REGION: ap-northeast-2
+
+      # EC2 SSH → k3s에 Secret 생성 & Deployment 업데이트
+      - name: Deploy to K3s via SSH
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # 기존 db-secret 삭제
+            kubectl delete secret db-secret
+            
+            # -- db-secret 생성 --
+            cat <<EOF | kubectl apply -f -
+            apiVersion: v1
+            kind: Secret
+            metadata:
+              name: db-secret
+              namespace: default
+            type: Opaque
+            stringData:
+                MYSQL_ROOT_PASSWORD: "${{ secrets.DB_PASSWORD }}"
+                MYSQL_DATABASE: "${{ secrets.DB }}"
+                MYSQL_USER: "${{ secrets.DB_USERNAME }}"         
+                MYSQL_PASSWORD: "${{ secrets.DB_PASSWORD }}"
+            EOF
+
+            # 기존 app-secret 삭제
+            kubectl delete secret app-secret
+            
+            # -- app-secret 생성 --
+            cat <<EOF | kubectl apply -f -
+            apiVersion: v1
+            kind: Secret
+            metadata:
+              name: app-secret
+              namespace: default
+            type: Opaque
+            stringData:
+              MYSQL_URL: "${{ secrets.MYSQL_URL }}"
+              JWT_SECRET_KEY: "${{ secrets.JWT_SECRET_KEY }}"
+              GITHUB_CLIENT_SECRET: "${{ secrets.GITHUB_CLIENT_SECRET }}"
+            EOF
+
+            # -- 매니페스트 파일 적용 --
+            cd /home/${{ secrets.EC2_USER }}/k8s-manifests/k8s
+            kubectl apply -f .
+      
+            # -- 롤링 업데이트 완료 대기 --
+            kubectl rollout status deployment/skill-boost-app --timeout=5m
+      
+            # -- 배포 결과 확인 --
+            kubectl get pods -l app=skill-boost-app
+            echo "✅ Deployment successful!"
+            
+            # -- 사용하지 않는 이미지 삭제 --
+            sudo k3s ctr images prune --all
+
+      # AWS 보안 그룹에서 IP 제거
+#      - name: Remove Github Actions IP from security group
+#        if: always()
+#        run: |
+#          aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_SECRET_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+#        env:
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          AWS_DEFAULT_REGION: ap-northeast-2
