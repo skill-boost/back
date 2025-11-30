@@ -1,0 +1,40 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: skill-boost
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: Ov23liXAPa0etQe0EisI
+            client-secret: a5dc74aff160176ad62591fbe3d2c0a839eb1ef6
+            scope:
+              - read:user
+              - user:email
+            redirect-uri: http://localhost:8080/login/oauth2/code/github
+        provider:
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+            user-info-uri: https://api.github.com/user
+            user-name-attribute: id
+
+jwt:
+  secret-key: TXlTdXBlclNlY3JldEtleUZvclNraWxsQm9vc3RQcm9qZWN0MjAyNUNoYWxsZW5nZSE=
+  expiration-ms: 86400000
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html

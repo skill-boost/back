@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: redis
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  namespace: redis
+data:
+  redis.conf: |
+    bind 0.0.0.0
+    port 6379
+    protected-mode yes
+    appendonly yes
+    appendfsync everysec
+    maxmemory 512mb
+    maxmemory-policy volatile-lru
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-data
+  namespace: redis
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: local-path
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7.2
+          command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+          ports:
+            - name: redis
+              containerPort: 6379
+          volumeMounts:
+            - name: redis-config
+              mountPath: /usr/local/etc/redis
+            - name: redis-data
+              mountPath: /data
+      volumes:
+        - name: redis-config
+          configMap:
+            name: redis-config
+            items:
+              - key: redis.conf
+                path: redis.conf
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: redis-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: redis
+spec:
+  type: ClusterIP
+  selector:
+    app: redis
+  ports:
+    - port: 6379
+      targetPort: 6379
+      protocol: TCP
