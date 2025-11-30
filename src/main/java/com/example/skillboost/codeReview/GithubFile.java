@@ -1,4 +1,4 @@
-package com.example.skillboost.githubReader;
+package com.example.skillboost.codeReview;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

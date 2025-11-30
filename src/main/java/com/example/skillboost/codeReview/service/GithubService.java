@@ -1,5 +1,6 @@
-package com.example.skillboost.githubReader;
+package com.example.skillboost.codeReview.service;
 
+import com.example.skillboost.codeReview.GithubFile;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

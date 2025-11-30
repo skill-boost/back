@@ -1,5 +1,8 @@
-package com.example.skillboost.githubReader;
+package com.example.skillboost.codeReview.controller;
 
+import com.example.skillboost.codeReview.service.CodeReviewService;
+import com.example.skillboost.codeReview.GithubFile;
+import com.example.skillboost.codeReview.service.GithubService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +20,7 @@ public class CodeReviewController {
     private GithubService githubService;
 
     @Autowired
-    private AIReviewService aiReviewService;
+    private CodeReviewService codeReviewService;
 
     @PostMapping
     public ResponseEntity<?> reviewCode(
@@ -58,7 +61,7 @@ public class CodeReviewController {
 
             // 2. AI 리뷰 생성
             System.out.println("\n AI 리뷰 생성 중...");
-            String reviewResult = aiReviewService.reviewWithContext(code, comment, repoContext);
+            String reviewResult = codeReviewService.reviewWithContext(code, comment, repoContext);
 
             // 3. 응답 생성
             Map<String, Object> response = new HashMap<>();
