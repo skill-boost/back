@@ -34,5 +34,6 @@ jwt:
   expiration-ms: 86400000
 
 gemini:
+  model: ${GEMINI_MODEL}
   api:
     key: ${GEMINI_KEY}
