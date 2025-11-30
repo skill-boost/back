@@ -26,7 +26,9 @@ public class JwtProvider {
     private String secretKeyBase64;
 
     @Value("${jwt.expiration-ms}")
-    private long expirationMs;
+    private long accessTokenExpirationMs;
+
+    private final long refreshTokenExpirationMs = 14 * 24 * 60 * 60 * 1000L;
 
     @PostConstruct
     protected void init() {
@@ -43,17 +45,29 @@ public class JwtProvider {
             this.key = Keys.hmacShaKeyFor(keyBytes);
             log.info("JWT Provider 정상 초기화 완료");
         } catch (IllegalArgumentException e) {
-            log.error("Base64 디코딩 실패! 키 값을 확인해주세요. (현재 값: {})", safeKey);
+            log.error("Base64 디코딩 실패. 키 값을 확인해주세요. (현재 값: {})", safeKey);
             throw e;
         }
     }
+    /**
+     * Access Token 생성 (짧은 수명)
+     */
+    public String createAccessToken(String email) {
+        return createToken(email, accessTokenExpirationMs);
+    }
 
+    /**
+     * Refresh Token 생성 (긴 수명)
+     */
+    public String createRefreshToken(String email) {
+        return createToken(email, refreshTokenExpirationMs);
+    }
     /**
      * JWT 토큰 생성
      */
-    public String createToken(String email) {
+    public String createToken(String email, long expirationTime) {
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + this.expirationMs);
+        Date expiry = new Date(now.getTime() + expirationTime);
 
         return Jwts.builder()
                 .setSubject(email)
@@ -61,6 +75,17 @@ public class JwtProvider {
                 .setExpiration(expiry)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+    /**
+     * 토큰에서 사용자 ID(Email) 추출
+     */
+    public String getUserId(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 
     /**
@@ -91,13 +116,7 @@ public class JwtProvider {
      * JWT 토큰에서 Authentication 객체 생성
      */
     public Authentication getAuthentication(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        String email = claims.getSubject();
+        String email = getUserId(token);
 
         User principal = new User(
                 email,
