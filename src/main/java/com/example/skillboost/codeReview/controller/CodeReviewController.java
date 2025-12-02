@@ -13,7 +13,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/review")
-@CrossOrigin(origins = "http://localhost:3000") // React 개발 서버 주소
 public class CodeReviewController {
 
     @Autowired
