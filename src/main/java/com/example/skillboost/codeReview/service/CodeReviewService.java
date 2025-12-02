@@ -14,7 +14,7 @@ public class CodeReviewService {
 
     private final WebClient webClient;
 
-    @Value("${gemini.api.key}")
+    @Value("${gemini.key}")
     private String geminiApiKey;
 
     @Value("${gemini.model:gemini-2.5-flash}")
