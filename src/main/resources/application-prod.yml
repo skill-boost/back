@@ -9,7 +9,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
 
   security:
     oauth2:
@@ -34,7 +34,6 @@ jwt:
   expiration-ms: 86400000
 
 gemini:
-  api:
-    key: ${GEMINI_API_KEY}
   model: ${GEMINI_MODEL}
-
+  api:
+    key: ${GEMINI_KEY}
