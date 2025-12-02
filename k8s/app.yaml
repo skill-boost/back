@@ -59,10 +59,19 @@ kind: Ingress
 metadata:
   name: skill-boost-app-ingress
   namespace: default
+  annotations:
+    # 📌 Traefik에게 TLS/SSL 인증서를 자동으로 요청하도록 지시
+    # k3s에 기본 내장된 인증서 관리자(Cert-Manager와 유사)를 사용합니다.
+    # 이 예시에서는 기본 클러스터 발급자(ClusterIssuer)를 사용한다고 가정합니다.
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    # Vercel과 통신하기 위해 CORS 정책을 설정할 수 있습니다 (선택 사항)
+    # traefik.ingress.kubernetes.io/router.middlewares: default-cors@kubernetescrd
 spec:
   ingressClassName: traefik
+  # 📌 1. 도메인 지정
   rules:
-    - http:
+    - host: api.skill-boost.store  # ⚠️ 구매할 도메인으로 반드시 변경하세요 (예: api.example.com)
+      http:
         paths:
           - path: /
             pathType: Prefix
@@ -71,3 +80,8 @@ spec:
                 name: skill-boost-service
                 port:
                   number: 80
+  # 📌 2. TLS/SSL 인증서 설정 추가
+  tls:
+    - hosts:
+        - api.skill-boost.store  # ⚠️ 위 host와 동일하게 설정
+      secretName: skill-boost-app-tls # Traefik이 발급받은 인증서를 저장할 Kubernetes Secret 이름
