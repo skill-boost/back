@@ -40,7 +40,7 @@ springdoc:
     path: /swagger-ui.html
 
 gemini:
-  model: ${GEMINI_MODEL}
+  model: test-model
   api:
-    key: ${GEMINI_KEY}
+    key: test-key
 
