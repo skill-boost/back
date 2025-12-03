@@ -1,5 +1,4 @@
-// src/main/java/com/example/skillboost/codereview/github/GithubFile.java
-package com.example.skillboost.codereview.github;
+package com.example.skillboost.codeReview;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,7 +6,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class GithubFile {
-
     private String path;
     private String content;
 

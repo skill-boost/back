@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/coding")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class SubmissionController {
 
     private final GradingService gradingService;
