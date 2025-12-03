@@ -30,3 +30,8 @@ spring:
 jwt:
   secret-key: TXlTdXBlclNlY3JldEtleUZvclNraWxsQm9vc3RQcm9qZWN0MjAyNUNoYWxsZW5nZSE=
   expiration-ms: 100000
+
+gemini:
+  model: test-model
+  api:
+    key: test-key
