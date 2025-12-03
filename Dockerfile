@@ -20,8 +20,6 @@ WORKDIR /app
 
 COPY --from=builder /app/build/libs/*.jar app.jar
 
-COPY vosk-model-small-ko-0.22 /app/vosk-model
-
 EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
