@@ -1,10 +1,8 @@
 package com.example.skillboost.auth.handler;
-
 import com.example.skillboost.auth.JwtProvider;
 import com.example.skillboost.auth.service.TokenService;
 import com.example.skillboost.domain.User;
 import com.example.skillboost.repository.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -27,7 +24,10 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
     private final TokenService tokenService;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private static final String FRONTEND_REDIRECT_BASE_URL = "https://www.skill-boost.store";
+    private static final String FRONTEND_TOKEN_HANDLER_PATH = "/oauth2/redirect";
+
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -38,10 +38,11 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         Map<String, Object> attributes = oAuth2User.getAttributes();
+
         String email = (String) attributes.get("email");
+        String githubId = String.valueOf(attributes.get("id"));
 
         if (email == null || email.isEmpty()) {
-            String githubId = String.valueOf(attributes.get("id"));
             email = githubId + "@github.temp";
             log.warn("이메일 비공개 사용자 - 임시 이메일 사용: {}", email);
         }
@@ -61,13 +62,12 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         log.info("JWT 토큰 생성 및 Redis 저장 완료: {}", user.getEmail());
 
-        // JSON 응답 대신 리다이렉트를 수행하는 로직
-
-        String frontendRedirectBaseUrl = "https://www.skill-boost.store";
-        String frontendTokenHandlerPath = "/oauth2/redirect";
-        String targetUrl = UriComponentsBuilder.fromUriString(frontendRedirectBaseUrl + frontendTokenHandlerPath)
+        String targetUrl = UriComponentsBuilder
+                .fromUriString(FRONTEND_REDIRECT_BASE_URL + FRONTEND_TOKEN_HANDLER_PATH)
                 .queryParam("accessToken", accessToken)
                 .queryParam("refreshToken", refreshToken)
+                .queryParam("email", user.getEmail())
+                .queryParam("username", user.getUsername())
                 .build().toUriString();
 
         response.sendRedirect(targetUrl);
