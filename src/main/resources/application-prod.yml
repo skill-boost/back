@@ -39,4 +39,4 @@ gemini:
     key: ${GEMINI_KEY}
 
 stt:
-  vosk-model-path: /home/ubuntu/vosk-model-small-ko-0.22
+  vosk-model-path: /app/vosk-model
