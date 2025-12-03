@@ -43,3 +43,4 @@ gemini:
   model: ${GEMINI_MODEL}
   api:
     key: ${GEMINI_KEY}
+
