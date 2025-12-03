@@ -44,5 +44,3 @@ gemini:
   api:
     key: ${GEMINI_KEY}
 
-stt:
-  vosk-model-path: ${STT_MODEL:vosk-model}
