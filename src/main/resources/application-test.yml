@@ -35,3 +35,6 @@ gemini:
   model: test-model
   api:
     key: test-key
+
+stt:
+  vosk-model-path: test
