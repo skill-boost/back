@@ -37,3 +37,6 @@ gemini:
   model: ${GEMINI_MODEL}
   api:
     key: ${GEMINI_KEY}
+
+stt:
+  vosk-model-path: /home/ubuntu/vosk-model-small-ko-0.22
