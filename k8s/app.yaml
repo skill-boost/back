@@ -36,6 +36,15 @@ spec:
                 name: db-secret
             - secretRef:
                 name: app-secret
+          volumeMounts:
+            - name: vosk-model-storage # 아래 volumes에서 정의할 이름
+              # 🚨 Pod 내부에서 Vosk 모델을 찾을 경로입니다. 🚨
+              mountPath: /app/vosk-model
+              readOnly: true
+      volumes:
+        - name: vosk-model-storage
+          persistentVolumeClaim:
+            claimName: vosk-model-pvc # 2단계에서 생성한 PVC 이름
 ---
 apiVersion: v1
 kind: Service
