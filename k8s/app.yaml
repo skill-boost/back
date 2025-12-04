@@ -28,7 +28,7 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: "prod"
             - name: SPRING_DATA_REDIS_HOST
-              value: "redis.redis.svc.cluster.local"
+              value: "redis"
             - name: SPRING_DATA_REDIS_PORT
               value: "6379"
           envFrom:
