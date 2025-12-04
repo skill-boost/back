@@ -21,7 +21,7 @@ spring:
             scope:
               - read:user
               - user:email
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            redirect-uri: https://api.skill-boost.store/login/oauth2/code/github
         provider:
           github:
             authorization-uri: https://github.com/login/oauth/authorize
@@ -40,3 +40,6 @@ gemini:
 
 stt:
   vosk-model-path: /app/vosk-model
+
+server:
+  forward-headers-strategy: native
