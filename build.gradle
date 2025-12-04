@@ -48,6 +48,7 @@ dependencies {
     implementation group: 'com.alphacephei', name: 'vosk', version: '0.3.45'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'com.alphacephei:vosk:0.3.38'
+    implementation 'org.springframework.session:spring-session-data-redis'
 }
 
 tasks.named('test') {

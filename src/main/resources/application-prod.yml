@@ -29,6 +29,13 @@ spring:
             user-info-uri: https://api.github.com/user
             user-name-attribute: id
 
+  session:
+    store-type: redis
+    redis:
+      flush-mode: on-save
+      namespace: skillboost:session
+
+
 jwt:
   secret-key: ${JWT_SECRET_KEY}
   expiration-ms: 86400000
